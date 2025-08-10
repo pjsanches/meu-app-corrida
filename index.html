@@ -142,7 +142,7 @@
 
     <script>
         // *** IMPORTANTE: Substitua 'YOUR_GOOGLE_MAPS_API_KEY' pela sua chave de API real do Google Maps ***
-        const GOOGLE_MAPS_API_KEY = 'AIzaSyC6Jr0i1A2LcTSHDbjS1uwj-8xo3QiZOQ0'; // Chave de API extraída do script async defer no head
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyC6Jr0i1A2LcTSHDbjS1uwj-8xo3QiZOQ0'; 
 
         // Número de telefone fixo para o motorista (exemplo: Brasil, DDD 31)
         const DRIVER_PHONE_NUMBER = '5538992318721';
@@ -294,7 +294,7 @@
 
             const request = {
                 input: query,
-                types: ['address'], // 'address' para endereços completos, 'geocode' para endereços e nomes de locais
+                // Removida a restrição 'types: ['address']' para permitir busca por estabelecimentos
             };
 
             // Adiciona viés de localização se userCurrentLocation estiver disponível
@@ -328,7 +328,7 @@
         }
 
         // Callback function called when Google Maps API is loaded
-        function initMap() {
+        window.initMap = function() { // Tornar initMap uma função global
             // Inicializa os serviços do Google Maps
             geocoder = new google.maps.Geocoder();
             directionsService = new google.maps.DirectionsService();
@@ -385,9 +385,24 @@
                                 });
                             });
                             pickupLocationInput.value = address;
-                            // Centraliza o mapa na localização atual do usuário
+                            // Centraliza o mapa na localização atual do usuário e adiciona um marcador
                             map.setCenter({ lat: latitude, lng: longitude });
                             map.setZoom(15); // Aumenta o zoom para a localização do usuário
+
+                            new google.maps.Marker({
+                                position: { lat: latitude, lng: longitude },
+                                map: map,
+                                title: 'Sua Localização Atual',
+                                icon: {
+                                    path: google.maps.SymbolPath.CIRCLE,
+                                    scale: 8,
+                                    fillColor: '#3b82f6', // Cor azul para localização atual
+                                    fillOpacity: 1,
+                                    strokeWeight: 2,
+                                    strokeColor: '#ffffff'
+                                },
+                            });
+
                         } catch (error) {
                             console.error('Erro ao obter endereço reverso (Google):', error);
                             showMessage('Não foi possível obter sua localização atual. Digite o local de partida.', 'error');
